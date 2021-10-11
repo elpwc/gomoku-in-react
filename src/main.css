@@ -1,0 +1,90 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    background-color: rgb(230, 230, 230);
+}
+
+.contents {
+    width: 100%;
+    padding: 50px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 800px;
+    background-color: white;
+    margin-top: 50px;
+    border-radius: 10px;
+}
+
+.block {
+    /*
+    width: 200px;
+    height: 200px;
+    font-size: 150px;
+    */
+    border-style: solid;
+    border-width: 1px;
+    border-color: gray;
+    text-align: center;
+    cursor: pointer;
+}
+
+.block_0 {
+    background-color: white;
+    color: black;
+}
+
+.block_1 {
+    background-color: black;
+    color: white;
+}
+
+.win {
+    background-color: lightgray;
+    color: yellow;
+}
+
+.horiz {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.verti {
+    display: grid;
+    vertical-align: top;
+}
+
+.chessboard {
+    border-style: solid;
+    border-width: 3px;
+    border-color: gray;
+    border-radius: 5px;
+}
+
+.btn {
+    background-color: white;
+    border-radius: 10px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: gray;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    max-height: 70px;
+    width: 150px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+#bottombar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#bottombar-item {
+    flex: 0 0 300px;
+}
