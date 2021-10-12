@@ -18,6 +18,42 @@ body {
     border-radius: 10px;
 }
 
+.left-contents {
+    width: 15%;
+    padding:20px;
+    background-color: white;
+    border-radius: 10px;
+    position:fixed;
+    top:50px;
+    left:100px;
+    align-content: center;
+    text-align: center;
+}
+
+.left-contents button{
+    background-color: white;
+    border-style: solid;
+    border-color:cadetblue;
+    font-size:20px;
+    padding-left:20px;
+    padding-right:20px;
+    margin-top:15px;
+    cursor: pointer;
+}
+
+.left-contents button:hover{
+    background-color: rgb(228, 228, 228);
+}
+
+.left-contents button:active{
+    background-color: rgb(201, 201, 201);
+}
+
+
+.left-contents input{
+    font-size:20px;
+}
+
 .block {
     /*
     width: 200px;
@@ -31,15 +67,37 @@ body {
     cursor: pointer;
 }
 
+.block:hover{
+    background-color: rgb(236, 236, 236);
+}
+
 .block_0 {
     background-color: white;
     color: black;
+}
+
+.block_0:hover{
+    background-color: rgb(236, 236, 236);
 }
 
 .block_1 {
     background-color: black;
     color: white;
 }
+
+.block_1:hover{
+    background-color: rgb(53, 53, 53);
+}
+
+.block_2 {
+    background-color: white;
+    color: black;
+}
+
+.block_2:hover{
+    background-color: rgb(236, 236, 236);
+}
+
 
 .win {
     background-color: lightgray;
@@ -56,6 +114,7 @@ body {
 .verti {
     display: grid;
     vertical-align: top;
+    max-width:100px;
 }
 
 .chessboard {
@@ -77,6 +136,14 @@ body {
     width: 150px;
     font-size: 30px;
     cursor: pointer;
+}
+
+.btn:hover{
+    background-color: rgb(230, 228, 228);
+}
+
+.btn:active{
+    background-color: rgb(194, 191, 191);
 }
 
 #bottombar {
