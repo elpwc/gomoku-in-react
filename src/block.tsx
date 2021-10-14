@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { EventHandler } from 'react';
 import { PLAYER_LIST } from './global';
 
-function Block(props: any): JSX.Element {
-    const CURRENT: number = props.crt, WIDTH: number = props.width;
-    var text: string = "";
+interface P {
+    crt: number;
+    width: number;
+    win: boolean;
+    onClick: EventHandler<React.SyntheticEvent> | undefined;
+}
 
-    if (CURRENT == 0) {//0: o, 1: x;
-        text = "";
-    } else {
-        text = PLAYER_LIST[CURRENT - 1];
-    }
+function Block(props: P): JSX.Element {
+    const CURRENT: number = props.crt, WIDTH: number = props.width;
 
     return (
         <div
@@ -21,7 +21,7 @@ function Block(props: any): JSX.Element {
             }}
             onClick={props.onClick}
         >
-            <span>{text}</span>
+            <span>{CURRENT === 0 ? "" : PLAYER_LIST[CURRENT - 1]}</span>
         </div>
     );
 }

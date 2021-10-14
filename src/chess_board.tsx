@@ -1,36 +1,21 @@
-import React from 'react';
 import Block from './block';
 
-export default class ChessBoard extends React.Component<any, any> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
+interface P {
+    width: number;
+    height: number;
+    win_pattern: number[];
+    blocks: number[];
+    onClick: any;
+}
 
-        }
-    }
-
-    render(): JSX.Element {
-        const WIDTH: number = this.props.width, HEIGHT: number = this.props.height;
-
-        let firstRow: number[] = [];
-        for (let i = 0; i < HEIGHT; i++) {
-            firstRow.push(i * WIDTH);
-        }
-
-        var innerblocks: JSX.Element[] = firstRow.map(i => {
-            let crtLine: number[] = [];
-            for (let j = 0; j < WIDTH; j++) {
-                crtLine.push(i + j);
-            }
+export default function ChessBoard(props: P) {
+    const WIDTH: number = props.width, HEIGHT: number = props.height,
+        innerblocks: JSX.Element[] = ([...Array(Number(HEIGHT))].map((_, i) => (i * WIDTH))).map((i: number) => {
             return (
                 <div className="horiz" key={i}>{
-                    crtLine.map(j => {
-                        var t_win: boolean = false;
-
-                        //console.log(props.win_pattern);
-                        if (this.props.win_pattern && this.props.win_pattern.includes(j)) { t_win = true; }
+                    ([...Array(Number/*没有Number()会导致WIDTH被认定为string*/(WIDTH))].map((_, k: number) => (i + k))).map((j) => {
                         return (
-                            <Block crt={this.props.blocks[j]} onClick={() => this.props.onClick(j)} win={t_win} key={j} width={WIDTH} />
+                            <Block crt={props.blocks[j]} onClick={() => props.onClick(j)} win={props.win_pattern && props.win_pattern.includes(j)} key={j} width={WIDTH} />
                         );
                     })
                 }
@@ -38,10 +23,9 @@ export default class ChessBoard extends React.Component<any, any> {
             );
         });
 
-        return (
-            <div className="chessboard">
-                {innerblocks}
-            </div>
-        );
-    }
+    return (
+        <div className="chessboard">
+            {innerblocks}
+        </div>
+    );
 }

@@ -1,15 +1,39 @@
 import React from 'react';
 import { PLAYER_LIST } from './global';
 import ChessBoard from './chess_board';
+import { TimerCommand } from './timer';
 import Timer from './timer';
 import SettingBox from './settingbox';
 import './main.css';
 
-namespace GameMain {
+export namespace GameMain {
+    interface P {
+        width: number;
+        height: number;
+        winLength: number;
+        playernum: number;
+    }
 
+    interface S {
+        next: number;
+        history_boards: number[][];
+        blocks: number[];
+        matchResult: MatchResult;
+        timer_command: TimerCommand;
+        width: number;
+        height: number;
+        winlength: number;
+        playernum: number;
+    }
 
-    class MyGame extends React.Component<any, any> {
-        constructor(props: any) {
+    interface MatchResult {
+        available: boolean;
+        winner: number;
+        pattern: number[];
+    }
+
+    export class MyGame extends React.Component<P, S> {
+        constructor(props: P) {
             super(props);
             this.state = {
                 next: 1,
@@ -20,7 +44,7 @@ namespace GameMain {
                     winner: -1,
                     pattern: this.getInitWonPatternMatchResult(this.props.winLength)
                 },
-                timer_command: 0,
+                timer_command: TimerCommand.default,
                 width: this.props.width,
                 height: this.props.height,
                 winlength: this.props.winLength,
@@ -37,26 +61,18 @@ namespace GameMain {
                 matchResult: {
                     available: false,
                     winner: -1,
-                    pattern: this.getInitWonPatternMatchResult(this.state.winLength)
+                    pattern: this.getInitWonPatternMatchResult(this.state.winlength)
                 },
-                timer_command: 4
+                timer_command: TimerCommand.StopAndClear
             });
         }
 
         getInitArr(count: number): number[] {
-            var res: number[] = [];
-            for (let i = 0; i < count; i++) {
-                res.push(0);
-            }
-            return res;
+            return ([...Array(Number(count))].map(_ => 0));
         }
 
         getInitWonPatternMatchResult(winLen: number): number[] {
-            var res: number[] = [];
-            for (let i = 0; i < winLen; i++) {
-                res.push(-1);
-            }
-            return res;
+            return ([...Array(Number(winLen))].map(_ => -1));
         }
 
         getKeyAt(x: number, y: number): number {
@@ -68,39 +84,37 @@ namespace GameMain {
         }
 
         isPatternWin(pattern: number[], blocks: number[]): boolean {
-            var res: boolean = true;
-            if (blocks[pattern[0]] == 0) {
+            if (blocks[pattern[0]] === 0) {
                 return false;
             }
 
+            let f_flag = true;
             for (let i = 1; i < this.state.winlength; i++) {
-
-                if (blocks[pattern[i]] != blocks[pattern[i - 1]] || blocks[pattern[i]] == 0) {
-                    res = false;
-                    break;
+                if (blocks[pattern[i]] !== blocks[pattern[i - 1]] || blocks[pattern[i]] === 0) {
+                    f_flag = false;
                 }
             }
-            return res;
+            return f_flag;
         }
 
-        isWin(blocks: number[]): any {
+        isWin(blocks: number[]): MatchResult {
             const WIDTH: number = this.state.width, HEIGHT: number = this.state.height, WIN_LEN: number = this.state.winlength;
-            var t_flag: boolean = false;
-            var t_pattern: number[] = this.getInitWonPatternMatchResult(WIN_LEN);
+            let t_flag: boolean = false;
+            let t_pattern: number[] = this.getInitWonPatternMatchResult(WIN_LEN);
 
-            var key = 0
-            var win_patterns: number[][] = [];
+            let key = 0
+            let win_patterns: number[][] = [];
             blocks.forEach(b => {
-                if (b != 0) {
-                    const CRT_PLYR = b, CRT_POS = this.getPosByKey(key);
+                if (b !== 0) {
+                    const CRT_POS = this.getPosByKey(key);
 
                     //generate pattern
 
                     /// TODO: 对任意位置的block的所有won patterns的获取 ，随后在下侧判断
 
                     for (let i = 0; i < 4; i++) {
-                        var temp_pattern: number[] = [];
-                        var thre1: number = -1, thre2: number = -1;
+                        let temp_pattern: number[] = [];
+                        let thre1: number = -1, thre2: number = -1;
                         switch (i) {
                             case 0://horiz(left)
                                 for (let j = 0; j < WIN_LEN; j++) {
@@ -215,31 +229,25 @@ namespace GameMain {
                 this.inAGame = true;
                 console.log(9);
                 this.setState({
-                    timer_command: 1
+                    timer_command: TimerCommand.Start
                 });
             }
 
-            if (!this.state.matchResult.available && this.state.blocks[index] == 0) {
-                var t_blocks: number[] = this.state.blocks.slice(0);
-                var t_histo: number[][] = this.state.history_boards.slice(0);
+            if (!this.state.matchResult.available && this.state.blocks[index] === 0) {
+                let t_blocks: number[] = this.state.blocks.slice(0);
+                let t_histo: number[][] = this.state.history_boards.slice(0);
                 t_histo.push(t_blocks);
                 console.log(t_histo);
 
-                if (t_blocks[index] == 0) {
+                if (t_blocks[index] === 0) {
                     t_blocks[index] = this.state.next;
                 }
 
-                var t_res: any = this.isWin(t_blocks);
-                var t_next = this.state.next + 1;
-                this.setState((state: any) => ({
+                this.setState((state: S) => ({
                     history_boards: t_histo,
-                    next: t_next > this.state.playernum ? 1 : t_next,
+                    next: state.next + 1 > state.playernum ? 1 : state.next + 1,
                     blocks: t_blocks,
-                    matchResult: {
-                        available: t_res.available,
-                        winner: t_res.winner,
-                        pattern: t_res.pattern
-                    }
+                    matchResult: this.isWin(t_blocks)
                 }));
             }
         }
@@ -247,32 +255,27 @@ namespace GameMain {
         redo_onClick(): void {
             if (this.state.history_boards.length > 0) {
 
-                var t_time_command: number = 0;
+                let t_time_command: number = TimerCommand.default;
                 if (!this.inAGame) {
                     this.inAGame = true;
-                    t_time_command = 1;
+                    t_time_command = TimerCommand.Start;
                 }
 
-                var t_blocks: number[] = this.getInitArr(this.props.width * this.props.height);
-                if (this.state.history_boards.length != 1) {
+                let t_blocks: number[] = this.getInitArr(this.props.width * this.props.height);
+                if (this.state.history_boards.length !== 1) {
                     t_blocks = this.state.history_boards.slice(0)[this.state.history_boards.length - 2];
                 }
 
-                var t_histo: number[] = this.state.history_boards.slice(0);
+                let t_histo: number[][] = this.state.history_boards.slice(0);
                 t_histo.pop();
                 console.log(t_histo);
 
-                var t_res: any = this.isWin(t_blocks);
-                var t_next = this.state.next + 1;
-                this.setState((state: any) => ({
+                let t_once_matchResult: MatchResult = this.isWin(t_blocks); //在setstate()内会警告(因为win()内也有setstate())
+                this.setState((state: S) => ({
                     history_boards: t_histo,
-                    next: t_next > this.state.playernum ? 1 : t_next,
+                    next: state.next + 1 > state.playernum ? 1 : state.next + 1,
                     blocks: t_blocks,
-                    matchResult: {
-                        available: t_res.available,
-                        winner: t_res.winner,
-                        pattern: t_res.pattern
-                    },
+                    matchResult: t_once_matchResult,
                     timer_command: t_time_command
                 }));
             }
@@ -290,7 +293,7 @@ namespace GameMain {
                     winner: -1,
                     pattern: this.getInitWonPatternMatchResult(winlen)
                 },
-                timer_command: 4,
+                timer_command: TimerCommand.StopAndClear,
                 width: width,
                 height: height,
                 winlength: winlen,
@@ -314,7 +317,6 @@ namespace GameMain {
                                 win_pattern={this.state.matchResult.pattern}
                                 width={this.state.width}
                                 height={this.state.height}
-                                winlength={this.state.winLength}
                             />
 
                             <div className="verti">
@@ -340,7 +342,7 @@ namespace GameMain {
                         <h1 id="bottombar">
                             <span id="bottombar-item">{
                                 this.state.matchResult.available ?
-                                    (this.state.matchResult.winner == -1 ?
+                                    (this.state.matchResult.winner === -1 ?
                                         "no space to put, please press the clear or redo button." :
                                         ("winner is " + (PLAYER_LIST[this.state.matchResult.winner - 1]))) :
                                     "next player: " + (PLAYER_LIST[this.state.next - 1])
@@ -355,7 +357,7 @@ namespace GameMain {
 
     export function GameMain() {
         return (
-            <MyGame width="20" height="20" winLength="5" playernum="2" />
+            <MyGame width={20} height={20} winLength={5} playernum={2} />
         );
     }
 

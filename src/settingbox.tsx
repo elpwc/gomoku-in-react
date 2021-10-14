@@ -1,6 +1,4 @@
-import React from 'react';
-
-var w: number = 5, h: number = 5, wl: number = 3, pn: number = 2;
+let w: number = 5, h: number = 5, wl: number = 3, pn: number = 2;
 
 function inputChange(e: any) {
     switch (e.target.id) {
@@ -21,33 +19,44 @@ function inputChange(e: any) {
     }
 }
 
-function InputBox(props: any, contents: any): JSX.Element {
+interface P_InputBox {
+    children: string;
+    placeholder: string;
+    id: string;
+    default: string;
+}
+
+function InputBox(props: P_InputBox): JSX.Element {
     return (
         <div>
             <span>{props.children}</span>
-            <input type="text" placeholder={isNaN(props.placeholder) ? "" : props.placeholder} id={props.id} onChange={inputChange} defaultValue={isNaN(props.default) ? "" : props.default}></input>
+            <input type="text" placeholder={(props.placeholder === null) ? "" : props.placeholder} id={props.id} onChange={inputChange} defaultValue={props.default === null ? "" : props.default}></input>
         </div>
     );
 }
 
-export default class SettingBox extends React.Component<any, any>{
-    constructor(props: any) {
-        super(props);
-        w = this.props.width;
-        h = this.props.height;
-        wl = this.props.winlen;
-        pn = this.props.playernum;
-    }
+interface P_SettingBox {
+    width: number;
+    height: number;
+    winlen: number;
+    playernum: number;
+    onClick: any;
+}
 
-    render(): JSX.Element {
-        return (
-            <div>
-                <InputBox default={w} id="tb_w">Width</InputBox>
-                <InputBox default={h} id="tb_h">Height</InputBox>
-                <InputBox default={wl} id="tb_wl">WinLength</InputBox>
-                <InputBox default={pn} id="tb_pn">PlayerNum</InputBox>
-                <button onClick={() => this.props.onClick(w, h, wl, pn)}>Apply</button>
-            </div>
-        );
-    }
+export default function SettingBox(props: P_SettingBox) {
+    w = props.width;
+    h = props.height;
+    wl = props.winlen;
+    pn = props.playernum;
+
+    return (
+        <div>
+            <InputBox default={String(w)} id="tb_w" placeholder="">Width</InputBox>
+            <InputBox default={String(h)} id="tb_h" placeholder="">Height</InputBox>
+            <InputBox default={String(wl)} id="tb_wl" placeholder="">WinLength</InputBox>
+            <InputBox default={String(pn)} id="tb_pn" placeholder="">PlayerNum</InputBox>
+            <button onClick={() => props.onClick(w, h, wl, pn)}>Apply</button>
+        </div>
+    );
+
 }
