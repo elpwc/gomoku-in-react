@@ -35,85 +35,78 @@ export default class Timer extends React.Component<P, S> {
         */
 
 
-        /*
-        
-    UNSAFE_componentWillReceiveProps(nextProps: P): void {
-        if (nextProps.command !== this.props.command) {
-            this.setState({
-                command: nextProps.command
-            });
+    /*
+    
+UNSAFE_componentWillReceiveProps(nextProps: P): void {
+    if (nextProps.command !== this.props.command) {
+        this.setState({
+            command: nextProps.command
+        });
+    }
+}
+
+UNSAFE_componentWillUpdate(nextProps: P, nextState: S): void {
+    if (nextState.command !== this.props.command) {
+        switch (nextState.command) {
+            case 1:
+                this.start();
+                break;
+            case 2:
+                this.stop();
+                break;
+            case 3:
+                this.clear();
+                break;
+            case 4:
+                this.stop();
+                this.clear();
+                break;
+            default:
+                break;
         }
     }
-
-    UNSAFE_componentWillUpdate(nextProps: P, nextState: S): void {
-        if (nextState.command !== this.props.command) {
-            switch (nextState.command) {
-                case 1:
-                    this.start();
-                    break;
-                case 2:
-                    this.stop();
-                    break;
-                case 3:
-                    this.clear();
-                    break;
-                case 4:
-                    this.stop();
-                    this.clear();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-        
-        */
+}
+    
+    */
 
 
-    static getDerivedStateFromProps(nextProps: P, prevProps: S) {
-        console.log(nextProps, prevProps);
+    static getDerivedStateFromProps(nextProps: P, prevState: S) {
+        //console.log(nextProps, prevProps);
         const command = nextProps.command;
 
-        if (command !== prevProps.command) {
-            return {command: command};
+        if (command !== prevState.command) {
+            return { command: command };
         }
 
         return null;
     }
 
     getSnapshotBeforeUpdate(nextProps: P, nextState: S): any {
-        console.log(nextState.command , this.props.command);
-        console.log(typeof nextState.command ,typeof this.props.command);
+        //console.log(nextState.command , this.props.command);
+        //console.log(typeof nextState.command ,typeof this.props.command);
         if (nextState.command !== this.props.command) {
-            switch (nextState.command) {
+            switch (this.props.command) {
                 case TimerCommand.Start:
-                    console.log(0);
                     this.start();
                     break;
                 case TimerCommand.Stop:
-                    console.log(1);
                     this.stop();
                     break;
                 case TimerCommand.Clear:
-                    console.log(2);
                     this.clear();
                     break;
                 case TimerCommand.StopAndClear:
-                    console.log(3);
                     this.stop();
                     this.clear();
                     break;
                 default:
-                    console.log(4);
                     break;
             }
         }
         return null;
     }
 
-    componentDidUpdate(prevProps: P, prevState: S, snapshot: any){
-
-        
+    componentDidUpdate(prevProps: P, prevState: S, snapshot: any) {
     }
 
     componentWillUnmount(): void {

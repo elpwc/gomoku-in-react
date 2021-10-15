@@ -15,7 +15,7 @@ export default function ChessBoard(props: P) {
                 <div className="horiz" key={i}>{
                     ([...Array(Number/*没有Number()会导致WIDTH被认定为string*/(WIDTH))].map((_, k: number) => (i + k))).map((j) => {
                         return (
-                            <Block crt={props.blocks[j]} onClick={() => props.onClick(j)} win={props.win_pattern && props.win_pattern.includes(j)} key={j} width={WIDTH} />
+                            <Block crt={props.blocks[j]} onClick={() => props.onClick(j)} win={props.win_pattern && props.win_pattern.includes(j)} key={j} width={WIDTH} startChangingColor={0} />
                         );
                     })
                 }

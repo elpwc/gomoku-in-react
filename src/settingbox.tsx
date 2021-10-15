@@ -55,7 +55,8 @@ export default function SettingBox(props: P_SettingBox) {
             <InputBox default={String(h)} id="tb_h" placeholder="">Height</InputBox>
             <InputBox default={String(wl)} id="tb_wl" placeholder="">WinLength</InputBox>
             <InputBox default={String(pn)} id="tb_pn" placeholder="">PlayerNum</InputBox>
-            <button onClick={() => props.onClick(w, h, wl, pn)}>Apply</button>
+            <input id="checkbox1" type="checkbox" /><span>AI</span>&nbsp;&nbsp;&nbsp;
+            <button onClick={() => props.onClick(w, h, wl, pn, (document.getElementById('checkbox1') as HTMLInputElement).checked)}>Apply</button>
         </div>
     );
 

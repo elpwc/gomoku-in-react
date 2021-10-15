@@ -5,6 +5,7 @@ import { TimerCommand } from './timer';
 import Timer from './timer';
 import SettingBox from './settingbox';
 import './main.css';
+import { getNextKey } from './gameai';
 
 export namespace GameMain {
     interface P {
@@ -24,6 +25,8 @@ export namespace GameMain {
         height: number;
         winlength: number;
         playernum: number;
+        ai: boolean;
+        current_is_ai: boolean;
     }
 
     interface MatchResult {
@@ -48,7 +51,9 @@ export namespace GameMain {
                 width: this.props.width,
                 height: this.props.height,
                 winlength: this.props.winLength,
-                playernum: this.props.playernum
+                playernum: this.props.playernum,
+                ai: false,
+                current_is_ai: false
             }
         }
 
@@ -175,12 +180,18 @@ export namespace GameMain {
                 key++;
             });
 
+
+
+
             win_patterns.forEach(pattern => {
                 if (this.isPatternWin(pattern, blocks)) {
                     t_pattern = pattern;
                     t_flag = true;
                 }
             });
+
+
+
 
             if (t_flag) {
                 if (this.inAGame) {
@@ -225,32 +236,57 @@ export namespace GameMain {
         inAGame: boolean = false;
 
         block_onClick(index = 0): void {
+
+            this.click_on_block(index);
+            this.current_is_ai = this.state.history_boards.length % 2 === 0;
+
+
+        }
+
+        componentDidUpdate() {
+            if (this.state.ai && this.current_is_ai) {
+                const aikey: number = getNextKey(this.state.blocks, this.state.next, this.state.width, this.state.height, this.state.winlength, this.state.playernum);
+                //const aikey: number = getNextKey(t_blocks, this.state.next, this.state.width, this.state.height, this.state.winlength, this.state.playernum);
+                this.current_is_ai = false;
+                this.click_on_block(aikey);
+                //console.log(this.state);
+
+                console.log(aikey);
+            }
+        }
+
+        click_on_block(index: number) {
             if (!this.inAGame && !this.state.matchResult.available) {
                 this.inAGame = true;
-                console.log(9);
                 this.setState({
                     timer_command: TimerCommand.Start
                 });
             }
 
+            let t_blocks: number[] = this.state.blocks.slice(0);
+            let t_histo: number[][] = this.state.history_boards.slice(0);
             if (!this.state.matchResult.available && this.state.blocks[index] === 0) {
-                let t_blocks: number[] = this.state.blocks.slice(0);
-                let t_histo: number[][] = this.state.history_boards.slice(0);
                 t_histo.push(t_blocks);
-                console.log(t_histo);
+                //console.log(t_histo);
 
                 if (t_blocks[index] === 0) {
                     t_blocks[index] = this.state.next;
                 }
+                //console.log('tb', t_blocks);
 
+                let t_once_matchResult: MatchResult = this.isWin(t_blocks); //在setstate()内会警告(因为win()内也有setstate())
                 this.setState((state: S) => ({
                     history_boards: t_histo,
                     next: state.next + 1 > state.playernum ? 1 : state.next + 1,
                     blocks: t_blocks,
-                    matchResult: this.isWin(t_blocks)
+                    matchResult: t_once_matchResult
                 }));
             }
+
         }
+
+
+        current_is_ai: boolean = false;
 
         redo_onClick(): void {
             if (this.state.history_boards.length > 0) {
@@ -282,7 +318,7 @@ export namespace GameMain {
 
         }
 
-        apply_onClick(width: number, height: number, winlen: number, playernum: number) {
+        apply_onClick(width: number, height: number, winlen: number, playernum: number, check: boolean) {
             this.inAGame = false;
             this.setState({
                 next: 1,
@@ -297,7 +333,8 @@ export namespace GameMain {
                 width: width,
                 height: height,
                 winlength: winlen,
-                playernum: playernum
+                playernum: playernum,
+                ai: check
             });
         }
 
@@ -357,7 +394,8 @@ export namespace GameMain {
 
     export function GameMain() {
         return (
-            <MyGame width={20} height={20} winLength={5} playernum={2} />
+            //<MyGame width={20} height={20} winLength={5} playernum={2} />
+            <MyGame width={3} height={3} winLength={3} playernum={2} />
         );
     }
 
